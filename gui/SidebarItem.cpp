@@ -1,4 +1,4 @@
-#include "sidebaritem.h"
+#include "SidebarItem.h"
 
 #include <QStyleOptionButton>
 #include <QStylePainter>

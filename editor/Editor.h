@@ -3,8 +3,10 @@
 
 #include <QObject>
 
-class QAbstractItemModel;
 class QStandardItemModel;
+class QTreeView;
+class CorrectArtistsView;
+
 
 namespace editor {
 
@@ -14,9 +16,17 @@ class Editor : public QObject
 public:
     explicit Editor(QObject *parent = 0);
 
-    QAbstractItemModel* genreModel();
+    void clear();
+    void save();
+
+    QWidget* createGenrefyArtistsView(QWidget* parent = 0);
+    QWidget* createAmbiguousTagsView(QWidget* parent = 0);
+    QWidget* createCorrectArtistsView(QWidget* parent = 0);
 
 signals:
+    void jobCountChanged(int count);
+    void genreBlacklisted(const QString& genre);
+    void genreWhitelisted(const QString& genre);
 
 public slots:
     // Artist correction is applied collection wide. It will not be specific to an album or whatever.
@@ -29,7 +39,16 @@ public slots:
     void setYear(const QString& artist, const QString& album, const QString& year);
 
 private:
+    void setupGenreModel();
+    void setupGenreSampleData();
+
+    void onGenreDoubleClicked(const QModelIndex& index);
+    void onContextMenuRequested(const QPoint& pos);
+
     QStandardItemModel* m_genreModel;
+    QTreeView*          m_genreView;
+    QTreeView*          m_ambiguousTagsView;
+    CorrectArtistsView* m_correctArtistsView;
 };
 
 } // namespace editor

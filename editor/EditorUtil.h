@@ -3,11 +3,12 @@
 
 #include <QMap>
 
+class QStandardItem;
+
 
 namespace editor {
 
-QStringList toDisplayStringList(const QMap<int, QString>& map);
-QStringList toEditStringList(const QMap<int, QString>& map);
+QList<QStandardItem*> prepareRow(const QString& artist, const QMap<int, QString>& genres);
 
 } // namespace editor
 
