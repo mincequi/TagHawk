@@ -1,15 +1,10 @@
 #include "Config.h"
 
 
-Config* Config::m_instance = nullptr;
-
 Config& Config::instance()
 {
-    if (!m_instance) {
-        m_instance = new Config();
-    }
-
-    return *m_instance;
+    static Config s_instance;
+    return s_instance;
 }
 
 Config::Config() : QSettings(nullptr)

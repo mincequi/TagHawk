@@ -4,11 +4,11 @@
 #include <QMap>
 
 class QStandardItem;
+class QStandardItemModel;
 
 
 namespace editor {
 
-QList<QStandardItem*> prepareRow(const QString& artist, const QMap<int, QString>& genres);
 
 } // namespace editor
 

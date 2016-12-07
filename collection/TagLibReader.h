@@ -1,48 +1,24 @@
 #ifndef READER_H
 #define READER_H
 
-#include <QFuture>
-#include <QObject>
+#include "AbstractReader.h"
+
+
+namespace collection {
 
 class Collection;
 
-
-namespace reader
-{
-
-class Reader : public QObject
+class TagLibReader : public AbstractReader
 {
     Q_OBJECT
 public:
-    enum Error {
-        NoError = 0,
-        FileNotFoundError,
-        TagLibError,
-        UnknownError
-    };
+    explicit TagLibReader(Collection& collection, QObject *parent = 0);
 
-    explicit Reader(Collection& database, QObject *parent = 0);
-
-    void read(const QStringList& locations);
-
-signals:
-    void scanningDirectory(const QString& directory);
-    void progress(int, int);
-
-    void stripId3v1(const QString& file);
-
-    void finished();
-    void error(Reader::Error error);
-
-public slots:
+    virtual void readFolder(const QString& folder) override;
+    virtual void readFiles(const QStringList& files) override;
 
 private:
-    void readTags(const QStringList& files);
-
-    Collection&       m_collection;
-    QFuture<void>   m_currentTask;
-
-    int m_currentProgress;
+    Collection& m_collection;
 };
 
 } // namespace reader

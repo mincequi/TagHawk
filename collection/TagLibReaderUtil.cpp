@@ -1,10 +1,7 @@
-#include "ReaderUtil.h"
-
-#include <taglib/id3v1tag.h>
-#include <taglib/id3v2tag.h>
+#include "TagLibReaderUtil.h"
 
 
-namespace reader
+namespace collection
 {
 
 bool operator==(const TagLib::ID3v1::Tag& v1, const TagLib::ID3v2::Tag& v2)

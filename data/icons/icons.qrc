@@ -1,2 +1,13 @@
-<RCC/>
-
+<RCC>
+    <qresource prefix="/icons">
+        <file>cancel.svg</file>
+        <file>copy.svg</file>
+        <file>folder.svg</file>
+        <file>reload.svg</file>
+        <file>settings-1.svg</file>
+        <file>settings.svg</file>
+        <file>download-1.svg</file>
+        <file>download.svg</file>
+        <file>garbage.svg</file>
+    </qresource>
+</RCC>

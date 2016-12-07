@@ -1,4 +1,4 @@
-#include "gui/mainwindow.h"
+#include "MainWindow.h"
 #include <QApplication>
 #include <QStatusBar>
 
@@ -12,13 +12,12 @@ int main(int argc, char *argv[])
     qSetMessagePattern("%{file}:%{line}> %{message}");
 
     QApplication a(argc, argv);
+    QApplication::setOrganizationName("TagHawk");
+    QApplication::setOrganizationDomain("taghawk.org");
+    QApplication::setApplicationName("TagHawk");
 
     MainWindow w;
     w.show();
-
-    QStringList paths;
-    paths.push_back(QString(argv[1]));
-    w.read(paths);
 
     return a.exec();
 }

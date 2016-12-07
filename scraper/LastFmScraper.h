@@ -3,12 +3,7 @@
 
 #include "LastFmCache.h"
 
-#include <CorrectorBase.h>
-
-#include <QMap>
-
-
-struct AlbumTag;
+#include "lector/CorrectorBase.h"
 
 
 namespace scraper {

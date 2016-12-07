@@ -3,15 +3,12 @@
 
 #include <QMainWindow>
 
-#include <Collection.h>
-
-#include <cache/cache.h>
-#include <editor/Editor.h>
-#include <lector/Lector.h>
-#include <reader/Reader.h>
-#include <scraper/LastFmScraper.h>
+#include "collection/Collection.h"
+#include "editor/Editor.h"
+#include "lector/Lector.h"
 
 
+class SettingsDialog;
 class QProgressBar;
 
 namespace Ui {
@@ -32,29 +29,38 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void read(const QStringList& locations);
-
 private slots:
-    void onScanningDirectory(const QString& directory);
-    void onReaderProgress(int value, int maximum);
+    void onReaderCurrentDirChanged(const QString& directory);
+    void onReaderProgressChanged(int value, int maximum);
+    void setPendingRescan();
+    void onCollectionSizeChanged(int size);
+    void onJobsChanged(int count);
+    void on_actionAddFolder_triggered(bool checked);
+    void on_actionAddFiles_triggered(bool checked);
+    void on_actionRescan_triggered(bool checked);
+    void on_actionClear_triggered(bool checked);
+    void on_actionSave_triggered(bool checked);
+    void on_actionSettings_triggered(bool checked);
 
 private:
-    void setupTagArtistView();
-    void setupCacheViews();
+    void setupCollectionView();
+    void setupGenrefyArtistsView();
+    void setupCorrectArtistView();
+    void setupJobsView();
+    void setupAutoTaggerViews();
     void setupSidebar();
 
     Ui::MainWindow* ui;
+    SettingsDialog* m_settingsDialog;
     QProgressBar*   m_progressBar;
 
     // Top-level app components
-    Collection      m_collection;
-    reader::Reader  m_reader;
-    lector::Lector  m_lector;
-    editor::Editor  m_editor;
+    collection::Collection  m_collection;
+    lector::Lector          m_lector;
+    editor::Editor          m_editor;
 
-    // View relevant components
-    Cache               m_cache;
-    QVector<QWidget*>   m_cacheWidgets;
+    //
+    QString m_recentFolder;
 };
 
 #endif // MAINWINDOW_H

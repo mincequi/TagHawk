@@ -3,18 +3,11 @@
 
 #include <ostream>
 
+#include <taglib/id3v1tag.h>
+#include <taglib/id3v2tag.h>
 
-namespace TagLib {
-class Tag;
-namespace ID3v1 {
-class Tag;
-} // namespace ID3v1
-namespace ID3v2 {
-class Tag;
-} // namespace ID3v2
-} // namespace TagLib
 
-namespace reader
+namespace collection
 {
 
 // We test here, wether ID3v1 tags are present in ID3v2 tag as well.

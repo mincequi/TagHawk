@@ -298,6 +298,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QRadioButton" name="jobsButton">
+             <property name="text">
+              <string>&amp;Jobs</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="Line" name="taskLine">
              <property name="lineWidth">
               <number>0</number>

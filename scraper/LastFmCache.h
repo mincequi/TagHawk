@@ -27,11 +27,6 @@ public:
         void                setCorrection(const QString& misspelled, const QString& corrected);
         QMap<int, QString>  getTopTags(const QString& artist);
         void                setTopTags(const QString& artist, const QMap<int, QString>& tags);
-
-    private:
-        QSqlDatabase    m_db;
-        QSqlQueryModel* m_correctionModel;
-        QSqlQueryModel* m_topTagsModel;
     } artist;
 };
 

@@ -26,8 +26,6 @@ signals:
 
 private:
     Config();
-
-    static Config* m_instance;
 };
 
 #endif // CONFIG_H

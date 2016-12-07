@@ -1,23 +1,22 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-#include <QObject>
 #include <QSqlDatabase>
 
 
-class Cache : public QObject
+class Cache
 {
-    Q_OBJECT
 public:
-    explicit Cache(QObject *parent = 0);
+    static Cache& instance();
 
-    QStringList tables() const;
-
-signals:
-
-public slots:
+    QSqlDatabase& db();
 
 private:
+    Cache();
+    ~Cache();
+
+    static Cache* m_instance;
+
     QSqlDatabase    m_db;
 };
 

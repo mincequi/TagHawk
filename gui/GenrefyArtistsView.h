@@ -14,7 +14,10 @@ public:
     explicit GenrefyArtistsView(QWidget *parent = 0);
     ~GenrefyArtistsView();
 
+    void setModel(QAbstractItemModel *model) Q_DECL_OVERRIDE;
+
 private:
+    void onGenreDoubleClicked(const QModelIndex& index);
     void onContextMenuRequested(const QPoint& pos);
     void checkSelection(Qt::CheckState state);
 };

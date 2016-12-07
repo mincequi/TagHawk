@@ -4,7 +4,8 @@
 #include <QString>
 
 
-struct AlbumTag {
+struct AlbumTag
+{
     AlbumTag(const QString& artist  = QString(),
              const QString& album   = QString(),
              std::int16_t year      = 0,

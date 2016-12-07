@@ -3,7 +3,7 @@
 
 #include <qmetatype.h>
 
-
+/*
 namespace editor {
 
 enum ItemDataRole {
@@ -19,6 +19,7 @@ enum ItemType {
 } // namespace editor
 
 Q_DECLARE_METATYPE(editor::ItemType)
+*/
 
 #endif // EDITORDEFINES_H
 

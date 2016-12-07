@@ -2,23 +2,46 @@
 
 #include <QDebug>
 #include <QRegExp>
-#include <QStandardPaths>
 
-#include "Defines.h"
-#include "common/DatabaseUtil.h"
+#include "config/Config.h"
 
 
 namespace lector {
 
 Lector::Lector(QObject *parent)
     : CorrectorBase(parent),
-      m_scraper(parent),
-      m_db(::database::openConfig())
+      m_config(Config::instance().genres()),
+      m_scraper(parent)
 {
+    connect(&Config::instance(), &Config::genresChanged, this, &Lector::onConfigChanged);
+
     connect(&m_scraper, &CorrectorBase::artist, this, &CorrectorBase::artist);
     connect(&m_scraper, &CorrectorBase::album, this, &CorrectorBase::album);
-    connect(&m_scraper, &CorrectorBase::genres, this, &Lector::onScraperGenres);
+    connect(&m_scraper, &CorrectorBase::genres, this, &Lector::on_scraper_genres);
     connect(&m_scraper, &CorrectorBase::year, this, &CorrectorBase::year);
+
+    // Load data from persistence
+    m_blacklistModel.setStringList(m_config.blacklist);
+    m_whitelistModel.setStringList(m_config.whitelist);
+}
+
+Lector::~Lector()
+{
+    // Store data to persistence
+    config::Genres genres = Config::instance().genres();
+    genres.blacklist = m_blacklistModel.stringList();
+    genres.whitelist = m_whitelistModel.stringList();
+    Config::instance().setGenres(genres);
+}
+
+GenreListModel* Lector::blacklistModel()
+{
+    return &m_blacklistModel;
+}
+
+GenreListModel* Lector::whitelistModel()
+{
+    return &m_whitelistModel;
 }
 
 void Lector::getGenres(const QString& artist)
@@ -26,12 +49,12 @@ void Lector::getGenres(const QString& artist)
     m_scraper.getGenres(artist);
 }
 
-scraper::lastfm::LastFmScraper& Lector::scraper()
+void Lector::onConfigChanged()
 {
-    return m_scraper;
+    m_config = Config::instance().genres();
 }
 
-void Lector::onScraperGenres(const QString& artist, const QMap<int, QString>& genres_)
+void Lector::on_scraper_genres(const QString& artist, const QMap<int, QString>& genres_)
 {
     if (artist.isEmpty() || genres_.isEmpty()) {
         qWarning() << "Empty values from scraper:" << "artist:" << artist << "genres:" << genres_;
@@ -44,7 +67,7 @@ void Lector::onScraperGenres(const QString& artist, const QMap<int, QString>& ge
         it.previous();
 
         // If we reached minimum genre weight or list is full, break
-        if ((it.key() < minimumGenreWeight) || (filteredGenres.size() >= maximumGenreCount)) {
+        if ((it.key() < m_config.minimumGenreWeight) || (filteredGenres.size() >= m_config.maximumGenreCount)) {
             break;
         }
 
@@ -54,10 +77,10 @@ void Lector::onScraperGenres(const QString& artist, const QMap<int, QString>& ge
         }
 
         // Add any genre that is above whitelistWeight or is in whitelist
-        if ((it.key() >= whiteListGenreWeight) || isWhitelisted(it.value())) {
+        if ((it.key() >= m_config.whitelistWeight) || isWhitelisted(it.value())) {
             filteredGenres.insertMulti(it.key(), it.value());
             // If genre is above whitelistWeight AND is in whitelist, this genre is distinct.
-            if ((it.key() >= whiteListGenreWeight) && isWhitelisted(it.value())) {
+            if ((it.key() >= m_config.whitelistWeight) && isWhitelisted(it.value())) {
                 break;
             }
             continue;
@@ -74,20 +97,22 @@ void Lector::onScraperGenres(const QString& artist, const QMap<int, QString>& ge
     emit genres(artist, filteredGenres);
 }
 
-bool Lector::isWhitelisted(const QString& genre)
-{
-    return false;
-}
-
 bool Lector::isBlacklisted(const QString& genre)
 {
     if (genre.isEmpty()) {
         return true;
     }
 
+    return m_blacklistModel.stringList().contains(genre, Qt::CaseInsensitive);
+}
 
+bool Lector::isWhitelisted(const QString& genre)
+{
+    if (genre.isEmpty()) {
+        return false;
+    }
 
-    return false;
+    return m_whitelistModel.stringList().contains(genre, Qt::CaseInsensitive);
 }
 
 void Lector::spellCheck(QString& genre)
