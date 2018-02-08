@@ -3,9 +3,6 @@
 
 #include "AbstractReader.h"
 
-
-namespace collection {
-
 class Collection;
 
 class TagLibReader : public AbstractReader
@@ -20,7 +17,5 @@ public:
 private:
     Collection& m_collection;
 };
-
-} // namespace reader
 
 #endif // READER_H

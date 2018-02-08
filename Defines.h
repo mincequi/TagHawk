@@ -9,11 +9,9 @@ namespace common {
 static const char cacheFile[]  = "cache.sqlite";
 } // namespace common
 
-namespace collection {
 static const QStringList supportedExtensions {
     "*.mp3"
 };
-} // namespace reader
 
 namespace scraper {
 namespace lastfm {

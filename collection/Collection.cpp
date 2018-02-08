@@ -6,21 +6,13 @@
 #include <QString>
 #include <iostream>
 
-#include "JobsModel.h"
-
-
-namespace collection {
-
 Collection::Collection(QObject *parent) :
     QObject(parent),
     m_reader(*this),
     m_writer(*this),
-    m_jobsModel(new JobsModel(this)),
     m_size(0),
     m_db(QSqlDatabase::addDatabase("QSQLITE", "collection")),
-    m_insertQuery(nullptr),
-    m_selectArtistInconsistenciesQuery(nullptr),
-    m_selectGenreInconsistenciesQuery(nullptr)
+    m_insertQuery(nullptr)
 {
     m_db.setDatabaseName(":memory:");
 
@@ -44,10 +36,8 @@ Collection::Collection(QObject *parent) :
     m_db.exec(str);
 
     m_insertQuery = new QSqlQuery(m_db);
-    m_insertQuery->prepare("INSERT INTO collection (fileName, artist, album, track, title, year, genre, stripId3v1, forceWrite) VALUES (:fileName, :artist, :album, :track, :title, :year, :genre, :stripId3v1, :forceWrite)");
-
-    m_selectGenreInconsistenciesQuery = new QSqlQuery(m_db);
-    m_selectGenreInconsistenciesQuery->prepare("SELECT DISTINCT genre FROM collection WHERE artist = :artist AND genre != :genre");
+    m_insertQuery->prepare("INSERT INTO collection (fileName, artist, album, track, title, year, genre, stripId3v1, forceWrite) "
+                           "VALUES (:fileName, :artist, :album, :track, :title, :year, :genre, :stripId3v1, :forceWrite)");
 }
 
 Collection::~Collection()
@@ -55,11 +45,6 @@ Collection::~Collection()
     if (m_insertQuery) {
         delete m_insertQuery;
         m_insertQuery = nullptr;
-    }
-
-    if (m_selectGenreInconsistenciesQuery) {
-        delete m_selectGenreInconsistenciesQuery;
-        m_selectGenreInconsistenciesQuery = nullptr;
     }
 }
 
@@ -73,24 +58,25 @@ AbstractWriter& Collection::writer()
     return m_writer;
 }
 
-JobsModel* Collection::jobsModel()
-{
-    return m_jobsModel;
-}
-
 bool Collection::isEmpty()
 {
     return m_size == 0;
 }
 
-void Collection::rescan()
-{
-}
-
 void Collection::clear()
 {
+    QSqlQuery query(m_db);
+    query.exec("DELETE FROM collection");
+    query.exec("VACUUM");
+
     m_size = 0;
     emit sizeChanged(m_size);
+}
+
+void Collection::clearChanges()
+{
+    QSqlQuery query(m_db);
+    query.exec("UPDATE collection SET artist_new = NULL, album_new = NULL, track_new = NULL, title_new = NULL, year_new = NULL, genre_new = NULL");
 }
 
 void Collection::beginWriting()
@@ -130,11 +116,6 @@ void Collection::appendEntry(const QString& fileName,
                              bool           stripId3v1,
                              bool           forceWrite)
 {
-    if (!m_lastArtist.isEmpty() && m_lastArtist != artist) {
-        emit artistAdded(m_lastArtist);
-    }
-    m_lastArtist = artist;
-
     AlbumTag albumTag { artist, album, year, genre };
     if (m_lastAlbum.isValid() && m_lastAlbum != albumTag) {
         emit albumAdded(m_lastAlbum);
@@ -152,43 +133,63 @@ void Collection::appendEntry(const QString& fileName,
     m_insertQuery->bindValue(":forceWrite", forceWrite);
     m_insertQuery->exec();
 
+    // If we finished adding current artist, emit a signal
+    if (!m_lastArtist.isEmpty() && m_lastArtist != artist) {
+        emit artistAdded(m_lastArtist);
+    }
+    m_lastArtist = artist;
+
     ++m_size;
     emit sizeChanged(m_size);
 }
 
-void Collection::renameArtist(const QString& artist, const QString& newName)
+std::list<Collection::Entry> Collection::entries() const
 {
     QSqlQuery query(m_db);
+    query.exec("SELECT fileName, artist, album, track, title, year, genre, "
+               "artist_new, album_new, track_new, title_new, year_new, genre_new, "
+               "stripId3v1, forceWrite "
+               "FROM collection WHERE "
+               "artist_new IS NOT NULL OR album_new IS NOT NULL OR track_new IS NOT NULL OR title_new IS NOT NULL OR year_new IS NOT NULL OR genre_new IS NOT NULL OR stripId3v1=\'1\' OR forceWrite=\'1\'");
+
+    std::list<Entry> entries;
+    while (query.next()) {
+        entries.push_back(Entry { query.value(0).toString(),
+                                  query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), query.value(4).toString(), query.value(5).toInt(), query.value(6).toString(),
+                                  query.value(7).toString(), query.value(8).toString(), query.value(9).toInt(), query.value(10).toString(), query.value(11).toInt(), query.value(12).toString(),
+                                  query.value(13).toBool(), query.value(14).toBool() });
+    }
+
+    return entries;
+}
+
+void Collection::renameArtist(const QString& artist, const QString& newName, int* rows)
+{
+    QSqlQuery query(m_db);
+
     bool success = query.prepare("UPDATE collection SET artist_new = :artist_new WHERE artist = :artist");
     query.bindValue(":artist", artist);
     query.bindValue(":artist_new", newName);
     success = query.exec();
+    *rows = query.numRowsAffected();
+
+    Q_UNUSED(success)
 }
 
-void Collection::categorizeArtist(const QString& artist, const QString& genre)
+void Collection::categorizeArtist(const QString& artist, const QString& genre, int* rows)
 {
     QSqlQuery query(m_db);
-    bool success = query.prepare("UPDATE collection SET genre_new = :genre_new WHERE artist = :artist");
+
+    bool success(false);
+    success = query.prepare("UPDATE collection SET genre_new = NULL WHERE artist = :artist");
     query.bindValue(":artist", artist);
-    query.bindValue(":genre_new", genre);
     success = query.exec();
+
+    success = query.prepare("UPDATE collection SET genre_new = :genre WHERE artist = :artist AND genre <> :genre");
+    query.bindValue(":artist", artist);
+    query.bindValue(":genre", genre);
+    success = query.exec();
+    *rows += query.numRowsAffected();
+
+    Q_UNUSED(success)
 }
-
-QStringList Collection::selectFiles(const QString& artist, const QString& genre)
-{
-    QSqlQuery query(m_db);
-
-    query.prepare("SELECT fileName FROM collection WHERE artist = :artist AND genre = :genre ORDER BY fileName ASC");
-    query.bindValue(":artist",   artist);
-    query.bindValue(":genre",    genre);
-    query.exec();
-
-    QStringList files;
-    while (query.next()) {
-        files << query.value(0).toString();
-    }
-
-    return files;
-}
-
-} // namespace collection

@@ -4,20 +4,29 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network xml sql
-CONFIG += c++11
+QT      += core gui network xml sql
+CONFIG  += c++11
 
 QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -Werror
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = TagHawk
 TEMPLATE = app
 
+INCLUDEPATH += src
 
 SOURCES += \
-    main.cpp\
+    main.cpp \
     MainWindow.cpp \
+    categorizeartists/CategorizeArtistsItem.cpp \
+    categorizeartists/CategorizeArtistsModel.cpp \
+    categorizeartists/CategorizeArtistsView.cpp \
+    correctartists/CorrectArtistsModel.cpp \
+    correctartists/CorrectArtistsView.cpp \
+    correctalbums/CorrectAlbumsModel.cpp \
+    datealbums/DateAlbumsModel.cpp \
     cache/Cache.cpp \
     collection/AbstractReader.cpp \
     collection/AbstractWriter.cpp \
@@ -28,6 +37,7 @@ SOURCES += \
     collection/TagLibWriterUtil.cpp \
     common/AlbumTag.cpp \
     common/DatabaseUtil.cpp \
+    common/Defines.cpp \
     config/Config.cpp \
     config/Genres.cpp \
     config/Tags.cpp \
@@ -35,29 +45,28 @@ SOURCES += \
     scraper/LastFmCache.cpp \
     lector/Lector.cpp \
     scraper/LastFmUtil.cpp \
-    editor/Editor.cpp \
     #gui/SourcesModel.cpp \
     #gui/SourceTreeView.cpp \
     gui/AmbiguousTagsView.cpp \
-    gui/CorrectArtistsView.cpp \
-    gui/GenrefyArtistsView.cpp \
     gui/ViewFactory.cpp \
-    #editor/GenreDelegate.cpp \
-    editor/EditorUtil.cpp \
-    editor/CorrectArtistsModel.cpp \
     gui/SettingsDialog.cpp \
     lector/CorrectorBase.cpp \
     lector/GenreListModel.cpp \
     gui/SidebarItem.cpp \
-    gui/GenreListView.cpp \
-    editor/CategorizeArtistsModel.cpp \
-    editor/AltCategorizeArtistsModel.cpp \
-    collection/JobsModel.cpp \
-    collection/Job.cpp
+    gui/GenreListView.cpp
 
 HEADERS  += \
-    Defines.h \
     MainWindow.h \
+    categorizeartists/CategorizeArtistsDefines.h \
+    categorizeartists/CategorizeArtistsItem.h \
+    categorizeartists/CategorizeArtistsModel.h \
+    categorizeartists/CategorizeArtistsView.h \
+    common/Defines.h \
+    correctartists/CorrectArtistsModel.h \
+    correctartists/CorrectArtistsView.h \
+    correctalbums/CorrectAlbumsModel.h \
+    datealbums/DateAlbumsModel.h \
+    Defines.h \
     cache/Cache.h \
     collection/AbstractReader.h \
     collection/AbstractWriter.h \
@@ -69,7 +78,6 @@ HEADERS  += \
     common/AlbumTag.h \
     common/Cluster.h \
     common/DatabaseUtil.h \
-    common/Media.h \
     common/Tag.h \
     config/Config.h \
     config/Genres.h \
@@ -78,31 +86,17 @@ HEADERS  += \
     scraper/LastFmCache.h \
     lector/Lector.h \
     scraper/LastFmUtil.h \
-    editor/Editor.h \
     #gui/SourcesModel.h \
     #gui/SourceTreeView.h \
     gui/AmbiguousTagsView.h \
-    gui/CorrectArtistsView.h \
-    gui/GenrefyArtistsView.h \
     gui/SettingsDialog.h \
     gui/ViewFactory.h \
-    #editor/GenreDelegate.h \
-    editor/EditorUtil.h \
-    editor/EditorDefines.h \
-    editor/CorrectArtistsModel.h \
     lector/CorrectorBase.h \
     lector/GenreListModel.h \
     gui/SidebarItem.h \
-    gui/GenreListView.h \
-    editor/CategorizeArtistsModel.h \
-    editor/AltCategorizeArtistsModel.h \
-    collection/JobsModel.h \
-    collection/Job.h
+    gui/GenreListView.h
 
 FORMS    += \
-    gui/renameartist.ui \
-    gui/tagartist.ui \
-    gui/TagArtistDelegate.ui \
     gui/SettingsDialog.ui \
     gui/MainWindow.ui
 

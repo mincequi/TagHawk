@@ -10,7 +10,7 @@ struct Genres
 {
     int maximumGenreCount;
     int minimumGenreWeight;
-    int whitelistWeight;
+    int autoConfirmWeight;
 
     QStringList whitelist;
     QStringList blacklist;

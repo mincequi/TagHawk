@@ -13,15 +13,14 @@
 
 #include "ui_MainWindow.h"
 
-#include "collection/JobsModel.h"
+#include "categorizeartists/CategorizeArtistsModel.h"
+#include "categorizeartists/CategorizeArtistsView.h"
+#include "correctartists/CorrectArtistsModel.h"
+#include "correctartists/CorrectArtistsView.h"
+
 #include "config/Config.h"
-#include "editor/CategorizeArtistsModel.h"
-#include "editor/CorrectArtistsModel.h"
-#include "gui/CorrectArtistsView.h"
-#include "gui/GenrefyArtistsView.h"
 #include "gui/GenreListView.h"
 #include "gui/SettingsDialog.h"
-
 #include "lector/GenreListModel.h"
 
 
@@ -35,19 +34,29 @@ MainWindow::MainWindow(QWidget *parent) :
     m_progressBar->hide();
     m_progressBar->setFormat("Reading file %v/%m");
 
-    connect(&m_collection.reader(), &collection::AbstractReader::scanningDirectory, this, &MainWindow::onReaderCurrentDirChanged);
-    connect(&m_collection.reader(), &collection::AbstractReader::progress, this, &MainWindow::onReaderProgressChanged);
+    // Gui related events
+    connect(&m_collection.reader(), &AbstractReader::scanningDirectory, this, &MainWindow::onReaderCurrentDirChanged);
+    connect(&m_collection.reader(), &AbstractReader::progress, this, &MainWindow::onReaderProgressChanged);
+    connect(&m_collection,          &Collection::sizeChanged, this, &MainWindow::onCollectionSizeChanged);
 
-    connect(&m_collection, &collection::Collection::sizeChanged, this, &MainWindow::onCollectionSizeChanged);
-    connect(&m_collection, &collection::Collection::artistAdded, &m_lector, &CorrectorBase::getGenres);
-    connect(m_collection.jobsModel(), &JobsModel::jobsChanged, this, &MainWindow::onJobsChanged);
+    // Internal events
+    connect(&m_collection, &Collection::artistAdded, &m_lector, &CorrectorBase::getGenres);
 
-    connect(&m_lector, &CorrectorBase::artist, m_editor.correctArtistsModel(), &CorrectArtistsModel::correct);
-    connect(&m_lector, &CorrectorBase::genres, m_editor.categorizeArtistsModel(), &CategorizeArtistsModel::setGenres);
+    // Use case related events
+    connect(&m_lector, &CorrectorBase::artist, &m_correctArtistModel, &CorrectArtistsModel::setCanonicalName);
+    connect(&m_lector, &CorrectorBase::genres, &m_categorizeArtistModel, &CategorizeArtistsModel::setGenres);
 
-    connect(m_editor.categorizeArtistsModel(), &CategorizeArtistsModel::genreBlacklisted, m_lector.blacklistModel(), &GenreListModel::add);
-    connect(m_editor.categorizeArtistsModel(), &CategorizeArtistsModel::genreWhitelisted, m_lector.whitelistModel(), &GenreListModel::add);
+    connect(&m_correctArtistModel, &CorrectArtistsModel::artistRenamed, &m_collection, &Collection::renameArtist);
 
+    connect(&m_categorizeArtistModel, &CategorizeArtistsModel::genreBlacklisted, m_lector.blacklistModel(), &GenreListModel::add);
+    connect(&m_categorizeArtistModel, &CategorizeArtistsModel::genreWhitelisted, m_lector.whitelistModel(), &GenreListModel::add);
+    connect(&m_categorizeArtistModel, &CategorizeArtistsModel::artistCategorized, [this](const QString& artist, const QString& genre, int* rows) {
+        m_collection.categorizeArtist(artist, genre, rows);
+        auto artistNames = m_correctArtistModel.originalNames(artist);
+        for (const auto& artist_ : artistNames) {
+            m_collection.categorizeArtist(artist_, genre, rows);
+        }
+    });
 
     // When auto tag feature changed its config or white/blacklist have changed, we trigger a pending rescan.
     connect(&Config::instance(), &Config::genresChanged,    this, &MainWindow::setPendingRescan);
@@ -55,9 +64,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_lector.whitelistModel(),  &GenreListModel::changed,   this, &MainWindow::setPendingRescan);
 
     setupCollectionView();
-    setupGenrefyArtistsView();
-    setupCorrectArtistView();
-    setupJobsView();
+    setupCategorizeArtistsView();
+    setupCorrectArtistsView();
     setupAutoTaggerViews();
     setupSidebar();
 }
@@ -133,56 +141,16 @@ void MainWindow::on_actionAddFiles_triggered(bool /*checked*/)
 void MainWindow::on_actionRescan_triggered(bool /*checked*/)
 {
     ui->actionRescan->setEnabled(false);
-    m_editor.clear();
-    m_collection.rescan();
 }
 
 void MainWindow::on_actionClear_triggered(bool /*checked*/)
 {
-    m_editor.clear();
     m_collection.clear();
 }
 
-//void MainWindow::updateJobs()
-//{
-//    auto genres = m_editor.categorizeArtistsModel()->genres();
-//
-//    for (auto it = genres.begin(); it != genres.end(); ++it) {
-//        auto inconsistencies = m_collection.selectGenreInconsistencies(it.key(), it.value());
-//        for (const auto& genre : inconsistencies) {
-//            auto files = m_collection.selectFiles(it.key(), genre);
-//            for (auto& file : files) {
-//                tagMap[file].setGenre(job.value().toString().toStdWString());
-//            }
-//        }
-//        break;
-//    }
-//
-//
-//    m_collection.selectGenreInconsistencies()
-//
-//    m_collection.writer().write(jobs);
-//}
-
 void MainWindow::on_actionSave_triggered(bool /*checked*/)
 {
-    auto genres = m_editor.categorizeArtistsModel()->genres();
-
-    //for (auto it = genres.begin(); it != genres.end(); ++it) {
-    //    auto inconsistencies = m_collection.selectGenreInconsistencies(it.key(), it.value());
-    //    for (const auto& genre : inconsistencies) {
-    //        auto files = m_collection.selectFiles(it.key(), genre);
-    //        for (auto& file : files) {
-    //            tagMap[file].setGenre(job.value().toString().toStdWString());
-    //        }
-    //    }
-    //    break;
-    //}
-    //
-    //
-    //m_collection.selectGenreInconsistencies()
-    //
-    //m_collection.writer().write(jobs);
+    m_collection.writer().write();
 }
 
 void MainWindow::on_actionSettings_triggered(bool /*checked*/)
@@ -190,38 +158,43 @@ void MainWindow::on_actionSettings_triggered(bool /*checked*/)
     m_settingsDialog->show();
 }
 
+void MainWindow::setupSidebar()
+{
+    QSpacerItem *spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    ui->sidebarWidget->layout()->addItem(spacer);
+}
+
 void MainWindow::setupCollectionView()
 {
 }
 
-void MainWindow::setupCorrectArtistView()
+void MainWindow::setupCorrectArtistsView()
 {
     CorrectArtistsView* v = new CorrectArtistsView(this);
-    v->setModel(m_editor.correctArtistsModel());
+    v->setModel(&m_correctArtistModel);
     ui->stackedWidget->addWidget(v);
 
     auto bind = std::bind(&QStackedWidget::setCurrentWidget, ui->stackedWidget, v);
     connect(ui->correctArtistButton, &QAbstractButton::pressed, bind);
 }
 
-void MainWindow::setupGenrefyArtistsView()
+void MainWindow::setupCategorizeArtistsView()
 {
-    GenrefyArtistsView* v = new GenrefyArtistsView(this);
-    v->setModel(m_editor.categorizeArtistsModel());
+    CategorizeArtistsView* v = new CategorizeArtistsView(this);
+    v->setModel(&m_categorizeArtistModel);
+    //v->setModel(testModel());
     ui->stackedWidget->addWidget(v);
 
     auto bind = std::bind(&QStackedWidget::setCurrentWidget, ui->stackedWidget, v);
-    connect(ui->tagArtistButton, &QAbstractButton::pressed, bind);
+    connect(ui->categorizeArtistButton, &QAbstractButton::pressed, bind);
 }
 
-void MainWindow::setupJobsView()
+void MainWindow::setupCorrectAlbumsView()
 {
-    QTreeView* v = new QTreeView(this);
-    v->setModel(m_collection.jobsModel());
-    ui->stackedWidget->addWidget(v);
+}
 
-    auto bind = std::bind(&QStackedWidget::setCurrentWidget, ui->stackedWidget, v);
-    connect(ui->jobsButton, &QAbstractButton::pressed, bind);
+void MainWindow::setupDateAlbumsView()
+{
 }
 
 void MainWindow::setupAutoTaggerViews()
@@ -241,10 +214,4 @@ void MainWindow::setupAutoTaggerViews()
         auto bind = std::bind(&QStackedWidget::setCurrentWidget, ui->stackedWidget, v);
         connect(ui->whitelistButton, &QAbstractButton::pressed, bind);
     }
-}
-
-void MainWindow::setupSidebar()
-{
-    QSpacerItem *spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    ui->sidebarWidget->layout()->addItem(spacer);
 }

@@ -1,9 +1,5 @@
 #include "TagLibReaderUtil.h"
 
-
-namespace collection
-{
-
 bool operator==(const TagLib::ID3v1::Tag& v1, const TagLib::ID3v2::Tag& v2)
 {
     // Case insensitive comparsion of most tags
@@ -43,5 +39,3 @@ std::ostream& operator<< (std::ostream& stream, const TagLib::Tag& tag)
     stream << "year:   " << tag.year() << std::endl;
     return stream;
 }
-
-} // namespace reader

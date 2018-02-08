@@ -3,9 +3,6 @@
 
 #include <QObject>
 
-
-namespace collection {
-
 class AbstractWriter : public QObject
 {
     Q_OBJECT
@@ -19,7 +16,5 @@ signals:
     void writingDirectory(const QString& directory);
     void progress(int, int);
 };
-
-} // namespace collection
 
 #endif // ABSTRACTWRITER_H

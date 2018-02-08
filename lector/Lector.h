@@ -8,7 +8,6 @@
 #include "config/Genres.h"
 #include "scraper/LastFmScraper.h"
 
-
 namespace lector {
 
 class Lector : public CorrectorBase
