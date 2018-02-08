@@ -17,7 +17,7 @@ config::Genres Config::genres() const
 
     genres.maximumGenreCount    = value("genres/maximum_genre_count",  5).toInt();
     genres.minimumGenreWeight   = value("genres/minimum_genre_weight", 20).toInt();
-    genres.whitelistWeight      = value("genres/whitelist_weight",     80).toInt();
+    genres.autoConfirmWeight      = value("genres/whitelist_weight",     80).toInt();
     genres.whitelist            = value("genres/whitelist").toStringList();
     genres.blacklist            = value("genres/blacklist").toStringList();
 
@@ -32,7 +32,7 @@ void Config::setGenres(const config::Genres& genres_)
 
     setValue("genres/maximum_genre_count",     genres_.maximumGenreCount);
     setValue("genres/minimum_genre_weight",    genres_.minimumGenreWeight);
-    setValue("genres/whitelist_weight",        genres_.whitelistWeight);
+    setValue("genres/whitelist_weight",        genres_.autoConfirmWeight);
     setValue("genres/whitelist",        genres_.whitelist);
     setValue("genres/blacklist",        genres_.blacklist);
 

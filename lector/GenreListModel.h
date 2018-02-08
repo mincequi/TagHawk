@@ -19,4 +19,4 @@ signals:
     void changed();
 };
 
-#endif GENRELISTMODEL_H
+#endif // GENRELISTMODEL_H

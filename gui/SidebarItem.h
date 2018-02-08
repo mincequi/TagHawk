@@ -16,6 +16,9 @@ signals:
 
 private slots:
     void onToggled(bool checked);
+
+private:
+    void setIndent(int indent);
 };
 
 #endif // SIDEBARITEM_H

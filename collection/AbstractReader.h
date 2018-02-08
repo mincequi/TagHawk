@@ -3,9 +3,6 @@
 
 #include <QObject>
 
-
-namespace collection {
-
 class AbstractReader : public QObject
 {
     Q_OBJECT
@@ -22,7 +19,5 @@ signals:
     void ambiguousTagsFound(const QString& file);
     void noTagsFound(const QString& file);
 };
-
-} // namespace collection
 
 #endif // ABSTRACTREADER_H

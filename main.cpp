@@ -4,9 +4,6 @@
 
 #include <iostream>
 
-
-using namespace scraper::lastfm;
-
 int main(int argc, char *argv[])
 {
     qSetMessagePattern("%{file}:%{line}> %{message}");

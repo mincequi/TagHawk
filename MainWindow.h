@@ -3,8 +3,12 @@
 
 #include <QMainWindow>
 
+#include "categorizeartists/CategorizeArtistsModel.h"
+#include "correctartists/CorrectArtistsModel.h"
+#include "correctalbums/CorrectAlbumsModel.h"
+#include "datealbums/DateAlbumsModel.h"
+
 #include "collection/Collection.h"
-#include "editor/Editor.h"
 #include "lector/Lector.h"
 
 
@@ -35,6 +39,8 @@ private slots:
     void setPendingRescan();
     void onCollectionSizeChanged(int size);
     void onJobsChanged(int count);
+
+    // Handle GUI/Action events
     void on_actionAddFolder_triggered(bool checked);
     void on_actionAddFiles_triggered(bool checked);
     void on_actionRescan_triggered(bool checked);
@@ -43,21 +49,30 @@ private slots:
     void on_actionSettings_triggered(bool checked);
 
 private:
-    void setupCollectionView();
-    void setupGenrefyArtistsView();
-    void setupCorrectArtistView();
-    void setupJobsView();
-    void setupAutoTaggerViews();
     void setupSidebar();
+    void setupCollectionView();
 
+    void setupCorrectArtistsView();
+    void setupCategorizeArtistsView();
+    void setupCorrectAlbumsView();
+    void setupDateAlbumsView();
+
+    void setupAutoTaggerViews();
+
+    // Ui elements
     Ui::MainWindow* ui;
     SettingsDialog* m_settingsDialog;
     QProgressBar*   m_progressBar;
 
-    // Top-level app components
-    collection::Collection  m_collection;
-    lector::Lector          m_lector;
-    editor::Editor          m_editor;
+    // basic app components
+    Collection      m_collection;
+    lector::Lector  m_lector;
+
+    // use case components
+    CorrectArtistsModel     m_correctArtistModel;
+    CategorizeArtistsModel  m_categorizeArtistModel;
+    CorrectAlbumsModel      m_correctAlbumsModel;
+    DateAlbumsModel         m_dateAlbumsModel;
 
     //
     QString m_recentFolder;

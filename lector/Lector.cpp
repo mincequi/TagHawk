@@ -5,7 +5,6 @@
 
 #include "config/Config.h"
 
-
 namespace lector {
 
 Lector::Lector(QObject *parent)
@@ -76,11 +75,11 @@ void Lector::on_scraper_genres(const QString& artist, const QMap<int, QString>& 
             continue;
         }
 
-        // Add any genre that is above whitelistWeight or is in whitelist
-        if ((it.key() >= m_config.whitelistWeight) || isWhitelisted(it.value())) {
+        // Add any genre that is above autoConfirmWeight or is in whitelist
+        if ((it.key() >= m_config.autoConfirmWeight) || isWhitelisted(it.value())) {
             filteredGenres.insertMulti(it.key(), it.value());
-            // If genre is above whitelistWeight AND is in whitelist, this genre is distinct.
-            if ((it.key() >= m_config.whitelistWeight) && isWhitelisted(it.value())) {
+            // If genre is above autoConfirmWeight AND is in whitelist, this genre is distinct.
+            if ((it.key() >= m_config.autoConfirmWeight) && isWhitelisted(it.value())) {
                 break;
             }
             continue;

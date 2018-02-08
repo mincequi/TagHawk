@@ -18,11 +18,7 @@
 #include "Defines.h"
 #include "TagLibReaderUtil.h"
 
-
 using namespace TagLib;
-
-namespace collection
-{
 
 TagLibReader::TagLibReader(Collection& collection, QObject *parent) :
     AbstractReader(parent),
@@ -140,5 +136,3 @@ void TagLibReader::readFiles(const QStringList& files)
     emit progress(files.count()+1, files.count());
     QCoreApplication::processEvents();
 }
-
-} // namespace collection

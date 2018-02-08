@@ -21,7 +21,7 @@ void SettingsDialog::on_buttonBox_accepted()
     config::Genres  genres = Config::instance().genres();
     genres.maximumGenreCount = ui->maxGenreCountSpinBox->value();
     genres.minimumGenreWeight = ui->minGenreWeightSpinBox->value();
-    genres.whitelistWeight = ui->whitelistWeightSpinBox->value();
+    genres.autoConfirmWeight = ui->whitelistWeightSpinBox->value();
     Config::instance().setGenres(genres);
 
     config::Tags    tags;
@@ -34,7 +34,7 @@ void SettingsDialog::showEvent(QShowEvent* event)
     config::Genres genres = Config::instance().genres();
     ui->maxGenreCountSpinBox->setValue(genres.maximumGenreCount);
     ui->minGenreWeightSpinBox->setValue(genres.minimumGenreWeight);
-    ui->whitelistWeightSpinBox->setValue(genres.whitelistWeight);
+    ui->whitelistWeightSpinBox->setValue(genres.autoConfirmWeight);
 
     QDialog::showEvent(event);
 }

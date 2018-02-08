@@ -89,54 +89,6 @@
             <number>3</number>
            </property>
            <item>
-            <widget class="QLabel" name="collectionLabel">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Collection</string>
-             </property>
-             <property name="margin">
-              <number>6</number>
-             </property>
-             <property name="indent">
-              <number>9</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="artistsButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Artists</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="albumsButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>A&amp;lbums</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="Line" name="collectionLine">
              <property name="enabled">
               <bool>true</bool>
@@ -156,12 +108,130 @@
             </widget>
            </item>
            <item>
+            <widget class="Line" name="autoTaggerLine">
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="tasksLabel">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <italic>false</italic>
+               <bold>true</bold>
+               <underline>false</underline>
+               <strikeout>false</strikeout>
+               <stylestrategy>PreferDefault</stylestrategy>
+               <kerning>true</kerning>
+              </font>
+             </property>
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <property name="text">
+              <string>Tasks</string>
+             </property>
+             <property name="scaledContents">
+              <bool>false</bool>
+             </property>
+             <property name="margin">
+              <number>6</number>
+             </property>
+             <property name="indent">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="SidebarItem" name="ambiguousTagsButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>A&amp;mbiguous Tags</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="SidebarItem" name="correctArtistButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Correct Artist</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="SidebarItem" name="categorizeArtistButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Categori&amp;ze Artist</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="SidebarItem" name="radioButton_9">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Set &amp;Year</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="taskLine">
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="loggingLine">
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="autotaggerLabel">
              <property name="font">
               <font>
                <weight>75</weight>
                <bold>true</bold>
               </font>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="lineWidth">
+              <number>0</number>
              </property>
              <property name="text">
               <string>Auto Tagger</string>
@@ -170,7 +240,7 @@
               <number>6</number>
              </property>
              <property name="indent">
-              <number>9</number>
+              <number>0</number>
              </property>
             </widget>
            </item>
@@ -183,7 +253,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Wh&amp;iteList</string>
+              <string>Wh&amp;itelist</string>
              </property>
             </widget>
            </item>
@@ -204,222 +274,17 @@
             </widget>
            </item>
            <item>
-            <widget class="Line" name="autoTaggerLine">
-             <property name="lineWidth">
-              <number>0</number>
-             </property>
+            <spacer name="verticalSpacer">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Vertical</enum>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="tasksLabel">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
              </property>
-             <property name="text">
-              <string>Tasks</string>
-             </property>
-             <property name="margin">
-              <number>6</number>
-             </property>
-             <property name="indent">
-              <number>9</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="ambiguousTagsButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>A&amp;mbiguous Tags</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="convertId3v1ToId3v2Button">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Convert ID&amp;3v1 to ID3v2</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="correctArtistButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Correct Artist</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="tagArtistButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Tag Artist</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="radioButton_9">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Set &amp;Year</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="jobsButton">
-             <property name="text">
-              <string>&amp;Jobs</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="Line" name="taskLine">
-             <property name="lineWidth">
-              <number>0</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="loggingLabel">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Logging</string>
-             </property>
-             <property name="margin">
-              <number>6</number>
-             </property>
-             <property name="indent">
-              <number>9</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="criticalLogButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>C&amp;ritical</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="warningLogButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Warning</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="SidebarItem" name="debugLogButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Deb&amp;ug</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="Line" name="loggingLine">
-             <property name="lineWidth">
-              <number>0</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="cacheLabel">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Cache</string>
-             </property>
-             <property name="margin">
-              <number>6</number>
-             </property>
-             <property name="indent">
-              <number>9</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox">
-             <property name="title">
-              <string>GroupBox</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_2">
-              <item row="0" column="0">
-               <widget class="QCommandLinkButton" name="commandLinkButton">
-                <property name="text">
-                 <string>CommandLinkButton</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="../data/icons/icons.qrc">
-                  <normaloff>:/icons/download.svg</normaloff>:/icons/download.svg</iconset>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
+            </spacer>
            </item>
           </layout>
          </widget>
@@ -488,7 +353,7 @@
      <x>0</x>
      <y>0</y>
      <width>771</width>
-     <height>25</height>
+     <height>19</height>
     </rect>
    </property>
   </widget>
@@ -518,7 +383,7 @@
   </action>
   <action name="actionSave">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../data/icons/icons.qrc">

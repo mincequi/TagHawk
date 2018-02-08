@@ -8,28 +8,43 @@
 
 #include "TagLibReader.h"
 #include "TagLibWriter.h"
-#include "common/AlbumTag.h"
-
-class JobsModel;
-
-
-namespace collection {
+#include <common/AlbumTag.h>
 
 class Collection : public QObject
 {
     Q_OBJECT
 
 public:
+    struct Entry {
+        QString         fileName;   // 0
+
+        QString         artist;     // 1
+        QString         album;
+        std::int32_t    track;
+        QString         title;
+        std::int32_t    year;
+        QString         genre;      // 6
+
+        QString         newArtist;  // 7
+        QString         newAlbum;
+        std::int32_t    newTrack;
+        QString         newTitle;
+        std::int32_t    newYear;
+        QString         newGenre;   // 12
+
+        bool            stripId3v1; // 13
+        bool            forceWrite; // 14
+    };
+
     explicit Collection(QObject *parent = 0);
     ~Collection();
 
     AbstractReader& reader();
     AbstractWriter& writer();
-    JobsModel*      jobsModel();
 
     bool isEmpty();
-    void rescan();
     void clear();
+    void clearChanges();
 
     void beginWriting();
     void endWriting();
@@ -47,11 +62,10 @@ public:
                      bool           stripId3v1,
                      bool           forceWrite);
 
-    void renameArtist(const QString& oldName, const QString& newName);
-    void categorizeArtist(const QString& artist, const QString& genre);
+    std::list<Entry> entries() const;
 
-    QStringList selectFiles(const QString& artist, const QString& genre);
-
+    void renameArtist(const QString& oldName, const QString& newName, int* rows);
+    void categorizeArtist(const QString& artist, const QString& genre, int* rows);
 
 signals:
     void sizeChanged(size_t size);
@@ -63,7 +77,6 @@ private:
 
     TagLibReader    m_reader;
     TagLibWriter    m_writer;
-    JobsModel*      m_jobsModel;
 
     int             m_size;
 
@@ -71,10 +84,6 @@ private:
     AlbumTag        m_lastAlbum;
     QSqlDatabase    m_db;
     QSqlQuery*      m_insertQuery;
-    QSqlQuery*      m_selectArtistInconsistenciesQuery;
-    QSqlQuery*      m_selectGenreInconsistenciesQuery;
 };
-
-} // namespace collection
 
 #endif // COLLECTION_H
