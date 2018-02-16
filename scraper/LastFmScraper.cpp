@@ -12,7 +12,6 @@
 #include "Defines.h"
 #include "LastFmUtil.h"
 
-
 namespace scraper {
 namespace lastfm {
 
@@ -65,11 +64,6 @@ void LastFmScraper::onArtistGetTopTags(const QString& uncorrected)
 
     m_cache.artist.setTopTags(corrected, tags);
     emit genres(corrected, tags);
-}
-
-const LastFmCache& LastFmScraper::cache() const
-{
-    return m_cache;
 }
 
 QString LastFmScraper::correctArtist(const QString& uncorrected)

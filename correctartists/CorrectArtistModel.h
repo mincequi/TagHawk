@@ -3,13 +3,13 @@
 
 #include <QStandardItemModel>
 
-class CorrectArtistsModel : public QStandardItemModel
+class CorrectArtistModel : public QStandardItemModel
 {
     Q_OBJECT
 
 public:
-    explicit CorrectArtistsModel(QObject *parent = 0);
-    ~CorrectArtistsModel();
+    explicit CorrectArtistModel(QObject *parent = 0);
+    ~CorrectArtistModel();
 
     void setCanonicalName(const QString& original, const QString& canonical);
     QString canonicalName(const QString& original) const;

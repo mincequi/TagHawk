@@ -3,16 +3,15 @@
 
 #include <QAbstractItemModel>
 
-#include "CategorizeArtistsItem.h"
-#include "config/Genres.h"
+#include "CategorizeArtistItem.h"
 
-class CategorizeArtistsModel : public QAbstractItemModel
+class CategorizeArtistModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit CategorizeArtistsModel(QObject *parent = 0);
-    virtual ~CategorizeArtistsModel();
+    explicit CategorizeArtistModel(QObject *parent = 0);
+    virtual ~CategorizeArtistModel();
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) Q_DECL_OVERRIDE;
@@ -36,9 +35,6 @@ signals:
 private:
     CategorizeArtistItem* find(const QString& artist);
 
-    void onConfigChanged();
-
-    config::Genres                  m_config;
     CategorizeArtistItem            m_rootItem;
     QList<CategorizeArtistItem*>    m_artistItems;
 };

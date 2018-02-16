@@ -1,4 +1,4 @@
-#include "CorrectArtistsModel.h"
+#include "CorrectArtistModel.h"
 
 #include <QDebug>
 
@@ -12,12 +12,12 @@ enum Column : int
     AffectedFilesColumn = 3
 };
 
-CorrectArtistsModel::CorrectArtistsModel(QObject *parent)
+CorrectArtistModel::CorrectArtistModel(QObject *parent)
     : QStandardItemModel(parent)
 {
     setHorizontalHeaderLabels( { "Original", "Canonical", "Confirmed", "Affected Files" } );
 
-    connect(this, &CorrectArtistsModel::dataChanged, [this](const QModelIndex& index_) {
+    connect(this, &CorrectArtistModel::dataChanged, [this](const QModelIndex& index_) {
         QString canonical = index_.data(Qt::CheckStateRole).toBool() ? data(index(index_.row(), 1)).toString() : QString();
         int numFiles = 0;
         emit artistRenamed(data(index(index_.row(), 0)).toString(), canonical, &numFiles);
@@ -25,11 +25,11 @@ CorrectArtistsModel::CorrectArtistsModel(QObject *parent)
     });
 }
 
-CorrectArtistsModel::~CorrectArtistsModel()
+CorrectArtistModel::~CorrectArtistModel()
 {
 }
 
-void CorrectArtistsModel::setCanonicalName(const QString& original, const QString& canonical)
+void CorrectArtistModel::setCanonicalName(const QString& original, const QString& canonical)
 {
     auto items = findItems(original, Qt::MatchExactly, OriginalColumn);
     if (!items.empty()) {
@@ -51,7 +51,7 @@ void CorrectArtistsModel::setCanonicalName(const QString& original, const QStrin
     checkboxItem->setCheckState(Qt::Checked);
 }
 
-QString CorrectArtistsModel::canonicalName(const QString& artist) const
+QString CorrectArtistModel::canonicalName(const QString& artist) const
 {
     for (int row = 0; row < rowCount(); ++row) {
         if (data(index(row, 0)).toString() == artist) {
@@ -62,7 +62,7 @@ QString CorrectArtistsModel::canonicalName(const QString& artist) const
     return artist;
 }
 
-QStringList CorrectArtistsModel::originalNames(const QString& canonical) const
+QStringList CorrectArtistModel::originalNames(const QString& canonical) const
 {
     QStringList names;
     auto items = findItems(canonical, Qt::MatchExactly, CanonicalColumn);

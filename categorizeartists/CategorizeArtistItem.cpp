@@ -1,18 +1,20 @@
-#include "CategorizeArtistsItem.h"
+#include "CategorizeArtistItem.h"
 
-#include "CategorizeArtistsDefines.h"
-
+#include "CategorizeArtistDefines.h"
+#include "CategorizeArtistModel.h"
 
 CategorizeArtistItem::CategorizeArtistItem()
-    : m_type(Type::Root),
+    : m_model(nullptr),
+      m_type(Type::Root),
       m_parent(nullptr),
       m_isConfirmed(false),
       m_numAffectedFiles(0)
 {
 }
 
-CategorizeArtistItem::CategorizeArtistItem(const QString& artist, const QMap<int, QString>& genres, int autoConfirmWeight)
-    : m_type(Type::Artist),
+CategorizeArtistItem::CategorizeArtistItem(CategorizeArtistModel* model, const QString& artist, const QMap<int, QString>& genres)
+    : m_model(model),
+      m_type(Type::Artist),
       m_artist(artist),
       m_isConfirmed(false),
       m_numAffectedFiles(0)
@@ -23,7 +25,6 @@ CategorizeArtistItem::CategorizeArtistItem(const QString& artist, const QMap<int
 
     m_genre = genres.last();
     m_weight = genres.lastKey();
-    m_isConfirmed = genres.lastKey() >= autoConfirmWeight;
 
     QMapIterator<int, QString> it(genres);
     it.toBack();
@@ -91,9 +92,50 @@ QVariant CategorizeArtistItem::data(int section, int role) const
     return QVariant();
 }
 
-QString CategorizeArtistItem::artist() const
+bool CategorizeArtistItem::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    return m_artist;
+    if (!index.isValid()) {
+        return false;
+    }
+
+    if (m_type != Type::Artist) {
+        return false;
+    }
+
+    // Handle user edit
+    if (role == Qt::EditRole && index.column() == GenreColumn) {
+         m_genre = value.toString();
+         m_weight = 100;
+         m_isConfirmed = true;
+         int numFiles = 0;
+         emit m_model->artistCategorized(m_artist, m_genre, &numFiles);
+         m_numAffectedFiles = numFiles;
+         emit m_model->dataChanged(index, index.sibling(index.row(), AffectedFilesColumn));
+         return true;
+    }
+
+    // Handle user confirmation
+    if (role == Qt::CheckStateRole && index.column() == ConfirmedColumn) {
+         m_isConfirmed = (value == Qt::Checked);
+         int numFiles = 0;
+         emit m_model->artistCategorized(m_artist, m_isConfirmed ? m_genre : QString(), &numFiles);
+         m_numAffectedFiles = numFiles;
+         emit m_model->dataChanged(index, index.sibling(index.row(), AffectedFilesColumn));
+         return true;
+    }
+
+    return false;
+}
+
+void CategorizeArtistItem::setConfirmed(bool isConfirmed)
+{
+    m_isConfirmed = isConfirmed;
+
+    if (m_isConfirmed) {
+        int numFiles = 0;
+        emit m_model->artistCategorized(m_artist, m_genre, &numFiles);
+        m_numAffectedFiles = numFiles;
+    }
 }
 
 CategorizeArtistItem* CategorizeArtistItem::artistItem() const
@@ -101,22 +143,18 @@ CategorizeArtistItem* CategorizeArtistItem::artistItem() const
     return m_parent;
 }
 
-QString CategorizeArtistItem::genre() const
-{
-    if (m_genre.isEmpty() || !m_isConfirmed) {
-        return QString();
-    }
-
-    return m_genre;
-}
-
 const QList<CategorizeArtistItem*> CategorizeArtistItem::genreItems() const
 {
     return m_children;
 }
 
-void CategorizeArtistItem::activateGenre(const CategorizeArtistItem* genreItem)
+void CategorizeArtistItem::activateGenre(const QModelIndex& index)
 {
+    CategorizeArtistItem* genreItem = static_cast<CategorizeArtistItem*>(index.internalPointer());
+    if (!genreItem) {
+        return;
+    }
+
     if (m_type != Type::Artist || genreItem->type() != Type::Genre) {
         return;
     }
@@ -124,29 +162,11 @@ void CategorizeArtistItem::activateGenre(const CategorizeArtistItem* genreItem)
     m_genre = genreItem->m_genre;
     m_weight = genreItem->m_weight;
     m_isConfirmed = true;
-}
 
-void CategorizeArtistItem::setUserGenre(const QString& genre)
-{
-    if (m_type != Type::Artist) {
-        return;
-    }
-
-    m_genre = genre;
-    m_weight = 100;
-    m_isConfirmed = true;
-}
-
-void CategorizeArtistItem::setConfirmed(bool isConfirmed)
-{
-    if (m_type != Type::Artist) {
-        return;
-    }
-
-    m_isConfirmed = isConfirmed;
-}
-
-void CategorizeArtistItem::setNumAffectedFiles(int numFiles)
-{
+    int numFiles = 0;
+    emit m_model->artistCategorized(m_artist, m_genre, &numFiles);
     m_numAffectedFiles = numFiles;
+
+    QModelIndex parentIndex = index.parent();
+    emit m_model->dataChanged(parentIndex, parentIndex.sibling(parentIndex.row(), AffectedFilesColumn));
 }

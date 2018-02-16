@@ -20,11 +20,6 @@ INCLUDEPATH += src
 SOURCES += \
     main.cpp \
     MainWindow.cpp \
-    categorizeartists/CategorizeArtistsItem.cpp \
-    categorizeartists/CategorizeArtistsModel.cpp \
-    categorizeartists/CategorizeArtistsView.cpp \
-    correctartists/CorrectArtistsModel.cpp \
-    correctartists/CorrectArtistsView.cpp \
     correctalbums/CorrectAlbumsModel.cpp \
     datealbums/DateAlbumsModel.cpp \
     cache/Cache.cpp \
@@ -53,17 +48,16 @@ SOURCES += \
     lector/CorrectorBase.cpp \
     lector/GenreListModel.cpp \
     gui/SidebarItem.cpp \
-    gui/GenreListView.cpp
+    gui/GenreListView.cpp \
+    categorizeartists/CategorizeArtistItem.cpp \
+    categorizeartists/CategorizeArtistModel.cpp \
+    categorizeartists/CategorizeArtistView.cpp \
+    correctartists/CorrectArtistModel.cpp \
+    correctartists/CorrectArtistView.cpp
 
 HEADERS  += \
     MainWindow.h \
-    categorizeartists/CategorizeArtistsDefines.h \
-    categorizeartists/CategorizeArtistsItem.h \
-    categorizeartists/CategorizeArtistsModel.h \
-    categorizeartists/CategorizeArtistsView.h \
     common/Defines.h \
-    correctartists/CorrectArtistsModel.h \
-    correctartists/CorrectArtistsView.h \
     correctalbums/CorrectAlbumsModel.h \
     datealbums/DateAlbumsModel.h \
     Defines.h \
@@ -94,7 +88,13 @@ HEADERS  += \
     lector/CorrectorBase.h \
     lector/GenreListModel.h \
     gui/SidebarItem.h \
-    gui/GenreListView.h
+    gui/GenreListView.h \
+    categorizeartists/CategorizeArtistDefines.h \
+    categorizeartists/CategorizeArtistItem.h \
+    categorizeartists/CategorizeArtistModel.h \
+    categorizeartists/CategorizeArtistView.h \
+    correctartists/CorrectArtistModel.h \
+    correctartists/CorrectArtistView.h
 
 FORMS    += \
     gui/SettingsDialog.ui \

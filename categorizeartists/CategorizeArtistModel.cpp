@@ -1,32 +1,21 @@
-#include "CategorizeArtistsModel.h"
+#include "CategorizeArtistModel.h"
 
-#include "CategorizeArtistsDefines.h"
+#include "CategorizeArtistDefines.h"
 
 #include <QDebug>
 
 #include "config/Config.h"
 
-CategorizeArtistsModel::CategorizeArtistsModel(QObject *parent)
-    : QAbstractItemModel(parent),
-      m_config(Config::instance().genres())
-{
-    connect(&Config::instance(), &Config::genresChanged, this, &CategorizeArtistsModel::onConfigChanged);
-
-    connect(this, &CategorizeArtistsModel::dataChanged, [this](const QModelIndex& index) {
-        CategorizeArtistItem* item = static_cast<CategorizeArtistItem*>(index.internalPointer());
-        if (!item->artist().isEmpty()) {
-            int numFiles = 0;
-            emit artistCategorized(item->artist(), item->genre(), &numFiles);
-            item->setNumAffectedFiles(numFiles);
-        }
-    });
-}
-
-CategorizeArtistsModel::~CategorizeArtistsModel()
+CategorizeArtistModel::CategorizeArtistModel(QObject *parent)
+    : QAbstractItemModel(parent)
 {
 }
 
-QVariant CategorizeArtistsModel::data(const QModelIndex &index, int role) const
+CategorizeArtistModel::~CategorizeArtistModel()
+{
+}
+
+QVariant CategorizeArtistModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) {
         return QVariant();
@@ -35,33 +24,21 @@ QVariant CategorizeArtistsModel::data(const QModelIndex &index, int role) const
     return static_cast<CategorizeArtistItem*>(index.internalPointer())->data(index.column(), role);
 }
 
-bool CategorizeArtistsModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool CategorizeArtistModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (!index.isValid()) {
         return false;
     }
 
     CategorizeArtistItem* item = static_cast<CategorizeArtistItem*>(index.internalPointer());
-    if (item->type() != CategorizeArtistItem::Type::Artist) {
+    if (!item) {
         return false;
     }
 
-    if (role == Qt::EditRole && index.column() == GenreColumn) {
-         item->setUserGenre(value.toString());
-         emit dataChanged(index, index);
-         return true;
-    }
-
-    if (role == Qt::CheckStateRole && index.column() == ConfirmedColumn) {
-         item->setConfirmed(value == Qt::Checked);
-         emit dataChanged(index, index);
-         return true;
-    }
-
-    return false;
+    return item->setData(index, value, role);
 }
 
-QVariant CategorizeArtistsModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant CategorizeArtistModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
         return QVariant();
@@ -70,7 +47,7 @@ QVariant CategorizeArtistsModel::headerData(int section, Qt::Orientation orienta
     return m_rootItem.data(section, role);
 }
 
-QModelIndex CategorizeArtistsModel::index(int row, int column, const QModelIndex& parent) const
+QModelIndex CategorizeArtistModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (!hasIndex(row, column, parent)) {
         return QModelIndex();
@@ -85,7 +62,7 @@ QModelIndex CategorizeArtistsModel::index(int row, int column, const QModelIndex
     return createIndex(row, column, parentItem->genreItems()[row]);
 }
 
-QModelIndex CategorizeArtistsModel::parent(const QModelIndex &index) const
+QModelIndex CategorizeArtistModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid()) {
         return QModelIndex();
@@ -106,7 +83,7 @@ QModelIndex CategorizeArtistsModel::parent(const QModelIndex &index) const
     }
 }
 
-int CategorizeArtistsModel::rowCount(const QModelIndex &parent) const
+int CategorizeArtistModel::rowCount(const QModelIndex &parent) const
 {
     // If root item, return artist count
     if (!parent.isValid()) {
@@ -121,7 +98,7 @@ int CategorizeArtistsModel::rowCount(const QModelIndex &parent) const
     return static_cast<CategorizeArtistItem*>(parent.internalPointer())->genreItems().count();
 }
 
-int CategorizeArtistsModel::columnCount(const QModelIndex &parent) const
+int CategorizeArtistModel::columnCount(const QModelIndex &parent) const
 {
     if (!parent.isValid()) {
         return 5;
@@ -130,7 +107,7 @@ int CategorizeArtistsModel::columnCount(const QModelIndex &parent) const
     return 2;
 }
 
-Qt::ItemFlags CategorizeArtistsModel::flags(const QModelIndex &index) const
+Qt::ItemFlags CategorizeArtistModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid()) {
         return Qt::ItemIsEnabled;
@@ -147,26 +124,22 @@ Qt::ItemFlags CategorizeArtistsModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index);
 }
 
-void CategorizeArtistsModel::setGenres(const QString& artist, const QMap<int, QString>& genres)
+void CategorizeArtistModel::setGenres(const QString& artist, const QMap<int, QString>& genres)
 {
     qDebug() << "Genres for artist" << artist << ":" << genres;
 
     beginInsertRows(QModelIndex(), m_artistItems.size(), m_artistItems.size());
     CategorizeArtistItem* artistItem = find(artist);
     if (!artistItem) {
-        artistItem = new CategorizeArtistItem(artist, genres, m_config.autoConfirmWeight);
+        artistItem = new CategorizeArtistItem(this, artist, genres);
         m_artistItems.push_back(artistItem);
     }
 
-    if (!artistItem->genre().isEmpty()) {
-        int numFiles = 0;
-        emit artistCategorized(artist, artistItem->genre(), &numFiles);
-        artistItem->setNumAffectedFiles(numFiles);
-    }
+    artistItem->setConfirmed(genres.lastKey() >= Config::instance().genres().autoConfirmWeight);
     endInsertRows();
 }
 
-CategorizeArtistItem* CategorizeArtistsModel::find(const QString& artist)
+CategorizeArtistItem* CategorizeArtistModel::find(const QString& artist)
 {
     for (CategorizeArtistItem* artistItem : m_artistItems) {
         if (artistItem->data(ArtistColumn) == artist) {
@@ -175,9 +148,4 @@ CategorizeArtistItem* CategorizeArtistsModel::find(const QString& artist)
     }
 
     return nullptr;
-}
-
-void CategorizeArtistsModel::onConfigChanged()
-{
-    m_config = Config::instance().genres();
 }

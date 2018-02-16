@@ -13,10 +13,10 @@
 
 #include "ui_MainWindow.h"
 
-#include "categorizeartists/CategorizeArtistsModel.h"
-#include "categorizeartists/CategorizeArtistsView.h"
-#include "correctartists/CorrectArtistsModel.h"
-#include "correctartists/CorrectArtistsView.h"
+#include "categorizeartists/CategorizeArtistModel.h"
+#include "categorizeartists/CategorizeArtistView.h"
+#include "correctartists/CorrectArtistModel.h"
+#include "correctartists/CorrectArtistView.h"
 
 #include "config/Config.h"
 #include "gui/GenreListView.h"
@@ -43,14 +43,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&m_collection, &Collection::artistAdded, &m_lector, &CorrectorBase::getGenres);
 
     // Use case related events
-    connect(&m_lector, &CorrectorBase::artist, &m_correctArtistModel, &CorrectArtistsModel::setCanonicalName);
-    connect(&m_lector, &CorrectorBase::genres, &m_categorizeArtistModel, &CategorizeArtistsModel::setGenres);
+    connect(&m_lector, &CorrectorBase::artist, &m_correctArtistModel, &CorrectArtistModel::setCanonicalName);
+    connect(&m_lector, &CorrectorBase::genres, &m_categorizeArtistModel, &CategorizeArtistModel::setGenres);
 
-    connect(&m_correctArtistModel, &CorrectArtistsModel::artistRenamed, &m_collection, &Collection::renameArtist);
+    connect(&m_correctArtistModel, &CorrectArtistModel::artistRenamed, &m_collection, &Collection::renameArtist);
 
-    connect(&m_categorizeArtistModel, &CategorizeArtistsModel::genreBlacklisted, m_lector.blacklistModel(), &GenreListModel::add);
-    connect(&m_categorizeArtistModel, &CategorizeArtistsModel::genreWhitelisted, m_lector.whitelistModel(), &GenreListModel::add);
-    connect(&m_categorizeArtistModel, &CategorizeArtistsModel::artistCategorized, [this](const QString& artist, const QString& genre, int* rows) {
+    connect(&m_categorizeArtistModel, &CategorizeArtistModel::genreBlacklisted, m_lector.blacklistModel(), &GenreListModel::add);
+    connect(&m_categorizeArtistModel, &CategorizeArtistModel::genreWhitelisted, m_lector.whitelistModel(), &GenreListModel::add);
+    connect(&m_categorizeArtistModel, &CategorizeArtistModel::artistCategorized, [this](const QString& artist, const QString& genre, int* rows) {
         m_collection.categorizeArtist(artist, genre, rows);
         auto artistNames = m_correctArtistModel.originalNames(artist);
         for (const auto& artist_ : artistNames) {
@@ -170,7 +170,7 @@ void MainWindow::setupCollectionView()
 
 void MainWindow::setupCorrectArtistsView()
 {
-    CorrectArtistsView* v = new CorrectArtistsView(this);
+    CorrectArtistView* v = new CorrectArtistView(this);
     v->setModel(&m_correctArtistModel);
     ui->stackedWidget->addWidget(v);
 
@@ -180,7 +180,7 @@ void MainWindow::setupCorrectArtistsView()
 
 void MainWindow::setupCategorizeArtistsView()
 {
-    CategorizeArtistsView* v = new CategorizeArtistsView(this);
+    CategorizeArtistView* v = new CategorizeArtistView(this);
     v->setModel(&m_categorizeArtistModel);
     //v->setModel(testModel());
     ui->stackedWidget->addWidget(v);

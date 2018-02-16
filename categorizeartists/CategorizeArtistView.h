@@ -3,14 +3,14 @@
 
 #include <QTreeView>
 
-class CategorizeArtistsView : public QTreeView
+class CategorizeArtistView : public QTreeView
 {
     Q_OBJECT
 
 public:
     // @TODO(mawe): need to provide black/whitelist model
-    explicit CategorizeArtistsView(QWidget *parent = 0);
-    ~CategorizeArtistsView();
+    explicit CategorizeArtistView(QWidget *parent = 0);
+    ~CategorizeArtistView();
 
     void setModel(QAbstractItemModel *model) Q_DECL_OVERRIDE;
 

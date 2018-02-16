@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 
-#include "categorizeartists/CategorizeArtistsModel.h"
-#include "correctartists/CorrectArtistsModel.h"
+#include "categorizeartists/CategorizeArtistModel.h"
+#include "correctartists/CorrectArtistModel.h"
 #include "correctalbums/CorrectAlbumsModel.h"
 #include "datealbums/DateAlbumsModel.h"
 
@@ -69,8 +69,8 @@ private:
     lector::Lector  m_lector;
 
     // use case components
-    CorrectArtistsModel     m_correctArtistModel;
-    CategorizeArtistsModel  m_categorizeArtistModel;
+    CorrectArtistModel     m_correctArtistModel;
+    CategorizeArtistModel  m_categorizeArtistModel;
     CorrectAlbumsModel      m_correctAlbumsModel;
     DateAlbumsModel         m_dateAlbumsModel;
 

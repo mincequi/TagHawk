@@ -4,13 +4,13 @@
 #include <QTreeView>
 
 
-class CorrectArtistsView : public QTreeView
+class CorrectArtistView : public QTreeView
 {
     Q_OBJECT
 
 public:
-    explicit CorrectArtistsView(QWidget *parent = 0);
-    ~CorrectArtistsView();
+    explicit CorrectArtistView(QWidget *parent = 0);
+    ~CorrectArtistView();
 
 private:
     void onContextMenuRequested(const QPoint& pos);

@@ -5,7 +5,6 @@
 
 #include "lector/CorrectorBase.h"
 
-
 namespace scraper {
 namespace lastfm {
 
@@ -16,8 +15,6 @@ public:
     explicit LastFmScraper(QObject *parent = 0);
 
     void getGenres(const QString& artist) override;
-
-    const LastFmCache& cache() const;
 
 private slots:
     void onArtistGetTopTags(const QString& artis);

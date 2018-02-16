@@ -4,6 +4,8 @@
 #include <QList>
 #include <QVariant>
 
+class CategorizeArtistModel;
+
 class CategorizeArtistItem
 {
 public:
@@ -14,40 +16,30 @@ public:
     };
 
     CategorizeArtistItem();
-    CategorizeArtistItem(const QString& artist, const QMap<int, QString>& genres, int autoConfirmWeight);
+    CategorizeArtistItem(CategorizeArtistModel* model, const QString& artist, const QMap<int, QString>& genres);
     ~CategorizeArtistItem();
 
     /// Type of Item
     Type type() const;
 
     /// General data accessor
-    QVariant data(int section, int role = Qt::DisplayRole) const;
+    QVariant    data(int section, int role = Qt::DisplayRole) const;
+    bool        setData(const QModelIndex &index, const QVariant &value, int role);
 
-    /// Get artist (only valid for artist item).
-    QString artist() const;
+    /// Set initial confirmed flag
+    void        setConfirmed(bool isConfirmed);
 
     /// Get associated artist item (only valid for genre item).
     CategorizeArtistItem* artistItem() const;
-
-    /// Get selected and confirmed genre (only valid for artist item).
-    QString genre() const;
 
     /// Get associated genres (only valid for artist item).
     const QList<CategorizeArtistItem*> genreItems() const;
 
     /// Set (child-) genre (only valid for artist item).
-    void activateGenre(const CategorizeArtistItem* genreItem);
-
-    /// Set custom genre (only valid for artist item).
-    void setUserGenre(const QString& genre);
-
-    /// Set confirmation flag (only valid for artist item).
-    void setConfirmed(bool isConfirmed);
-
-    /// Set number of affected files for change (only valid for artist item).
-    void setNumAffectedFiles(int numFiles);
+    void activateGenre(const QModelIndex& index);
 
 private:
+    CategorizeArtistModel*          m_model;
     Type                            m_type;
     CategorizeArtistItem*           m_parent;
     QList<CategorizeArtistItem*>    m_children;
